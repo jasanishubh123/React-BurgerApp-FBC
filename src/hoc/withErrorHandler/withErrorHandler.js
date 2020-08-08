@@ -3,49 +3,26 @@
 import React from 'react'
 import Modal from '../../component/UI/Modal/Modal'
 import Aux from '../Aux/Aux'
+import useHttpErrorHandler from '../../hooks/http-error-handler'
 
-const withErrorHandler=(WrappedComponent,axios)=>{
+const withErrorHandler = (WrappedComponent, axios) => {
 
-    return class extends React.Component{
+    return props => {
 
-        state={
-            error:null
-        }
-        componentWillMount(){
-
-           this.reqInter= axios.interceptors.request.use(req=>{
-                this.setState({error:null})
-                return req
-            })
-
-           this.resInter= axios.interceptors.response.use(res=>res,error=>{
-                this.setState({error:error})
-            })
-        }
-
-        componentWillUnmount(){
-            // console.log("Will Unmount ",this.reqInter,this.resInter)
-              axios.interceptors.request.eject(this.reqInter)
-              axios.interceptors.request.eject(this.resInter)
-
-        }
+       const[error,clearError] =useHttpErrorHandler(axios);
         
-        errorConfirmHandler=()=>{
-            this.setState({error:null})
-        }
+        return (
+            
+            <Aux>
+                <Modal show={error} ModalClosed={clearError}>
+                    {error ? error.message : ""}
+                </Modal>
+                <WrappedComponent {...props} />
+            </Aux>
+        )
 
-        render(){
-            return(
-                <Aux>
-                    <Modal show={this.state.error} ModalClosed={this.errorConfirmHandler}>
-                       {this.state.error?this.state.error.message:""}
-                    </Modal>
-                    <WrappedComponent {...this.props}/>
-                </Aux>
-            )
-        }
     }
-    
+
 
 
 }

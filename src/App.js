@@ -1,51 +1,54 @@
-import React from 'react';
+import React,{useEffect , Suspense} from 'react';
 import Layout from './hoc/Layout/Layout'
 import BurgerBuilder from './containers/BurgerBuilder/BurgerBuilder'
 import { Route, Switch, withRouter ,Redirect } from 'react-router-dom'
 import Logout from './containers/Auth/Logout/Logout'
 import { connect } from 'react-redux'
 import * as action from './store/actions/index'
-import asyncComponent from './hoc/asyncComponent/asyncComponent'
 
 
-const asyncCheckout=asyncComponent(()=>{
+
+const Checkout=React.lazy(()=>{
    return import('./containers/Checkout/Checkout')
 })
 
-const asyncOrder=asyncComponent(()=>{
+const Order=React.lazy(()=>{
   return import('./containers/Orders/Orders')
 })
 
-const asyncAuth=asyncComponent(()=>{
+const Auth=React.lazy(()=>{
   return import('./containers/Auth/Auth')
 })
 
 
-class App extends React.Component {
+ const App= props => {
+
+  const {onTryAutoSignup}=props
 
 
-  componentDidMount() {
-    this.props.onTryAutoSignup();
-    console.log(process.env.NODE_ENV)
-  }
+  useEffect(()=>{
+
+    onTryAutoSignup();
+  },[onTryAutoSignup])
 
 
-  render() {
+
+  
 
     let routes = (
       <Switch>
-        <Route path="/auth" component={asyncAuth} />
+        <Route path="/auth" render={(props)=><Auth {...props} />} />
         <Route path="/" exact component={BurgerBuilder} />
         <Redirect to="/" />
       </Switch>
     )
-    if (this.props.isAuth) {
+    if (props.isAuth) {
       routes = (
         <Switch>
-          <Route path="/auth" component={asyncAuth} />
+          <Route path="/auth" render={(props)=><Auth {...props} />} />
           <Route path="/" exact component={BurgerBuilder} />
-          <Route path="/checkout" component={asyncCheckout} />
-          <Route path="/orders" component={asyncOrder} ></Route>
+          <Route path="/checkout"render={(props)=><Checkout {...props} />} />
+          <Route path="/orders" render={(props)=><Order {...props} />} ></Route>
           <Route path="/logout" component={Logout} />
           <Redirect to="/" />
         </Switch>
@@ -57,15 +60,13 @@ class App extends React.Component {
 
         <Layout>
 
-          {routes}
-
-
+          <Suspense fallback={<p>Loading...</p>} >{routes}</Suspense>
 
         </Layout>
 
       </div>
     );
-  }
+  
 
 }
 

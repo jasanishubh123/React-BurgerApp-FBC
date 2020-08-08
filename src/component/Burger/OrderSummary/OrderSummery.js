@@ -3,18 +3,14 @@ import Aux from '../../../hoc/Aux/Aux'
 import Button from '../../UI/Button/Button'
 
 
-class OrderSummeray extends React.Component{
+const OrderSummeray=props=>{
 
 
-    componentWillUpdate(){
-        
 
-    }
 
-    render(){
-      const  ingredientsSummary=Object.keys(this.props.ingredients)
+      const  ingredientsSummary=Object.keys(props.ingredients)
         .map(igKey=>{
-        return <li key={igKey+1} ><span style={{textTransform:"capitalize"}}>{igKey}:</span>{this.props.ingredients[igKey]}</li>
+        return <li key={igKey+1} ><span style={{textTransform:"capitalize"}}>{igKey}:</span>{props.ingredients[igKey]}</li>
         })
        
 
@@ -25,13 +21,13 @@ class OrderSummeray extends React.Component{
             <ul>
                 {ingredientsSummary}
             </ul>
-    <p><strong>Total Price : {this.props.price}</strong></p>
+    <p><strong>Total Price : {props.price}</strong></p>
             <p>Continue to checkout</p>
-            <Button clicked={this.props.puchaseCancelled} btnType='Danger'>CANCEL</Button>
-            <Button clicked={this.props.purchaseContinue} btnType='Success'>CONTINUE</Button>
+            <Button clicked={props.puchaseCancelled} btnType='Danger'>CANCEL</Button>
+            <Button clicked={props.purchaseContinue} btnType='Success'>CONTINUE</Button>
         </Aux>
         )
-    }
+    
 
   
 
